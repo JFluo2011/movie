@@ -1,0 +1,21 @@
+# PyCharm templates
+*.iml
+.idea/
+
+# python template
+*__pycache__/
+venv/
+*-bak.py
+supervisord.conf
+supervisord.conf.d/
+
+
+# project ignore
+script.py
+local_security.py
+
+# db
+migrations/
+
+# log
+logs/
