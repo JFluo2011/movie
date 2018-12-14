@@ -1,0 +1,43 @@
+{% extends 'admin/base.html' %}
+{% block content %}
+
+    <div class="login-box">
+        <div class="login-logo">
+            <a href=""><b>微电影管理系统</b></a>
+        </div>
+        <div class="login-box-body">
+            <p class="login-box-msg"></p>
+            <form method="POST" id="form-data">
+                <div class="form-group has-feedback">
+                    {{ form.email }}
+                    <span class="glyphicon glyphicon-envelope form-control-feedback"></span>
+                    {#                    {% for err in form.email.errors %}#}
+                    {#                        <div class="col-md-12">#}
+                    {#                            <span style="color:red"> {{ err }}</span>#}
+                    {#                        </div>#}
+                    {#                    {% endfor %}#}
+                </div>
+                <div class="form-group has-feedback">
+                    {{ form.password }}
+                    <span class="glyphicon glyphicon-lock form-control-feedback"></span>
+                    {#                    {% for err in form.password.errors %}#}
+                    {#                        <div class="col-md-12">#}
+                    {#                            <span style="color:red"> {{ err }}</span>#}
+                    {#                        </div>#}
+                    {#                    {% endfor %}#}
+                </div>
+                <div class="row">
+                    <div class="col-xs-8">
+                        <span class="description-text">没有账号？</span><a href="{{ url_for('admin.register') }}">注册</a>
+                    </div>
+                    <div class="col-xs-4">
+                        {{ form.submit }}
+                        {{ form.csrf_token }}
+                    </div>
+                </div>
+
+            </form>
+        </div>
+    </div>
+
+{% endblock %}

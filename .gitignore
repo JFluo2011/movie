@@ -13,6 +13,7 @@ supervisord.conf.d/
 # project ignore
 script.py
 local_security.py
+*/static/uploads
 
 # db
 migrations/

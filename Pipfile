@@ -10,6 +10,9 @@ flask = "*"
 flask-migrate = "*"
 flask-script = "*"
 flask-sqlalchemy = "*"
+pymysql = "*"
+flask-wtf = "*"
+flask-login = "*"
 
 [requires]
 python_version = "3.6"
