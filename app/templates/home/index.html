@@ -1,8 +1,19 @@
 {% extends "home/layout.html" %}
 
-{% include 'home/animation.html' %}
+{% import 'ui/page_home.html' as page %}
+
 {% block content %}
     <!--热门电影-->
+    <section id="hotmovie" style="margin-top:76px">
+        <div class="container">
+            <div class="row wow fadeInRight" data-wow-delay="0.6s">
+                <div class="row">
+                    <iframe class="wow fadeIn" width="100%" height="375px" frameborder=0 scrolling=no
+                            src="{{ url_for('home.animation') }}"></iframe>
+                </div>
+            </div>
+        </div>
+    </section>
     <!--电影列表-->
     <section id="movielist">
         <div class="container">
@@ -12,123 +23,92 @@
                         <tr>
                             <td style="width:10%;">电影标签</td>
                             <td style="width:90%;">
-                                <a class="label label-info"><span class="glyphicon glyphicon-tag"></span>&nbsp;标签一</a>
-                                &nbsp;
-                                <a class="label label-info"><span class="glyphicon glyphicon-tag"></span>&nbsp;标签一</a>
-                                &nbsp;
-                                <a class="label label-info"><span class="glyphicon glyphicon-tag"></span>&nbsp;标签一</a>
-                                &nbsp;
-                                <a class="label label-info"><span class="glyphicon glyphicon-tag"></span>&nbsp;标签一</a>
-                                &nbsp;
-                                <a class="label label-info"><span class="glyphicon glyphicon-tag"></span>&nbsp;标签一</a>
+                                {% for tag in tags %}
+                                    <a class="label label-info"
+                                       href="{{ url_for('home.index', page=1) }}?tid={{ tag.id }}&star={{ params['star'] }}&time={{ params['time'] }}&play_num={{ params['play_num'] }}&comment_num={{ params['comment_num'] }}"><span
+                                            class="glyphicon glyphicon-tag"></span>&nbsp;{{ tag.name }}
+                                    </a>
+                                {% endfor %}
                         </tr>
                         <tr>
                             <td>电影星级</td>
                             <td>
-                                <a class="label label-warning"><span
-                                        class="glyphicon glyphicon-star"></span>&nbsp;一星</a>
-                                &nbsp;
-                                <a class="label label-warning"><span
-                                        class="glyphicon glyphicon-star"></span>&nbsp;二星</a>
-                                &nbsp;
-                                <a class="label label-warning"><span
-                                        class="glyphicon glyphicon-star"></span>&nbsp;三星</a>
-                                &nbsp;
-                                <a class="label label-warning"><span
-                                        class="glyphicon glyphicon-star"></span>&nbsp;四星</a>
-                                &nbsp;
-                                <a class="label label-warning"><span
-                                        class="glyphicon glyphicon-star"></span>&nbsp;五星</a>
+                                {% for star in range(1, 6) %}
+                                    <a class="label label-warning"
+                                       href="{{ url_for('home.index', page=1) }}?star={{ star }}&time={{ params['time'] }}&play_num={{ params['play_num'] }}&comment_num={{ params['comment_num'] }}"><span
+                                            class="glyphicon glyphicon-star"></span>{{ star }}星</a>
+                                {% endfor %}
                             </td>
                         </tr>
                         <tr>
                             <td>上映时间</td>
                             <td>
-                                <a class="label label-default"><span
-                                        class="glyphicon glyphicon-time">&nbsp;最近</span></a>
+                                <a class="label label-default"
+                                   href="{{ url_for('home.index', page=1) }}?star={{ params['star'] }}&time=1&play_num={{ params['play_num'] }}&comment_num={{ params['comment_num'] }}">
+                                    <span class="glyphicon glyphicon-time">&nbsp;最近</span>
+                                </a>
                                 &nbsp;
-                                <a class="label label-default"><span
-                                        class="glyphicon glyphicon-time">&nbsp;2017</span></a>
-                                &nbsp;
-                                <a class="label label-default"><span
-                                        class="glyphicon glyphicon-time">&nbsp;2016</span></a>
-                                &nbsp;
-                                <a class="label label-default"><span
-                                        class="glyphicon glyphicon-time">&nbsp;2015</span></a>
-                                &nbsp;
-                                <a class="label label-default"><span
-                                        class="glyphicon glyphicon-time">&nbsp;更早</span></a>
+                                <a class="label label-default"
+                                   href="{{ url_for('home.index', page=1) }}?star={{ params['star'] }}&time=2&play_num={{ params['play_num'] }}&comment_num={{ params['comment_num'] }}">
+                                    <span class="glyphicon glyphicon-time">&nbsp;更早</span>
+                                </a>
                             </td>
                         </tr>
                         <tr>
                             <td>播放数量</td>
                             <td>
-                                <a class="label label-success"><span class="glyphicon glyphicon-arrow-down"></span>&nbsp;从高到底</span>
+                                <a class="label label-success"
+                                   href="{{ url_for('home.index', page=1) }}?star={{ params['star'] }}&time={{ params['time'] }}&play_num=1&comment_num={{ params['comment_num'] }}">
+                                    <span class="glyphicon glyphicon-arrow-down">&nbsp;从高到底</span>
+
                                 </a>
                                 &nbsp;
-                                <a class="label label-danger"><span class="glyphicon glyphicon-arrow-up"></span>&nbsp;从低到高</span>
+                                <a class="label label-danger"
+                                   href="{{ url_for('home.index', page=1) }}?star={{ params['star'] }}&time={{ params['time'] }}&play_num=2&comment_num={{ params['comment_num'] }}">
+                                    <span class="glyphicon glyphicon-arrow-up">&nbsp;从低到高</span>
                                 </a>
                             </td>
                         </tr>
                         <tr>
                             <td>评论数量</td>
                             <td>
-                                <a class="label label-success"><span class="glyphicon glyphicon-arrow-down"></span>&nbsp;从高到底</span>
+                                <a class="label label-success"
+                                   href="{{ url_for('home.index', page=1) }}?star={{ params['star'] }}&time={{ params['time'] }}&play_num={{ params['play_num'] }}&comment_num=1">
+                                    <span class="glyphicon glyphicon-arrow-down">&nbsp;从高到底</span>
                                 </a>
                                 &nbsp;
-                                <a class="label label-danger"><span class="glyphicon glyphicon-arrow-up"></span>&nbsp;从低到高</span>
+                                <a class="label label-danger"
+                                   href="{{ url_for('home.index', page=1) }}?star={{ params['star'] }}&time={{ params['time'] }}&play_num={{ params['play_num'] }}&comment_num=2">
+                                    <span class="glyphicon glyphicon-arrow-up">&nbsp;从低到高</span>
                                 </a>
                             </td>
                         </tr>
                     </table>
                 </div>
-                {% for _ in range(1, 13) %}
+                {% for movie in page_data.items %}
                     <div class="col-md-3">
                         <div class="movielist text-center">
-                            <!--<img data-original="holder.js/262x166"
-                                     class="img-responsive lazy center-block" alt="">-->
-                            <img src="holder.js/262x166" class="img-responsive center-block" alt="">
+                            <img src="{{ url_for('static', filename='uploads/' + movie.logo) }}"
+                                 class="img-responsive center-block" alt="">
                             <div class="text-left" style="margin-left:auto;margin-right:auto;width:210px;">
-                                <span style="color:#999;font-style: italic;">环太平洋</span><br>
+                                <span style="color:#999;font-style: italic;">{{ movie.title }}</span><br>
                                 <div>
-                                    <span class="glyphicon glyphicon-star" style="color:#FFD119"></span>
-                                    <span class="glyphicon glyphicon-star" style="color:#FFD119"></span>
-                                    <span class="glyphicon glyphicon-star" style="color:#FFD119"></span>
-                                    <span class="glyphicon glyphicon-star-empty" style="color:#FFD119"></span>
-                                    <span class="glyphicon glyphicon-star-empty" style="color:#FFD119"></span>
+                                    {% for movie in range(1, movie.star+1) %}
+                                        <span class="glyphicon glyphicon-star" style="color:#FFD119"></span>
+                                    {% endfor %}
+                                    {% for movie in range(1, 5-movie.star+1) %}
+                                        <span class="glyphicon glyphicon-star-empty" style="color:#FFD119"></span>
+                                    {% endfor %}
                                 </div>
                             </div>
-                            <a href="{{ url_for('home.play') }}" class="btn btn-primary" target="_blank" role="button"><span
+                            <a href="{{ url_for('home.play', movie_id=movie.id, page=1) }}" class="btn btn-primary" target="_blank"
+                               role="button"><span
                                     class="glyphicon glyphicon-play"></span>&nbsp;播放</a>
                         </div>
                     </div>
                 {% endfor %}
-                <div class="col-md-12">
-                    <nav aria-label="Page navigation">
-                        <ul class="pagination">
-                            <li>
-                                <a href="#" aria-label="First">
-                                    <span aria-hidden="true">首页</span>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="#" aria-label="Previous">
-                                    <span aria-hidden="true">上一页</span>
-                                </a>
-                            </li>
-                            <li><a href="#">1&nbsp;/&nbsp;10</a></li>
-                            <li>
-                                <a href="#" aria-label="Next">
-                                    <span aria-hidden="true">下一页</span>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="#" aria-label="Last">
-                                    <span aria-hidden="true">尾页</span>
-                                </a>
-                            </li>
-                        </ul>
-                    </nav>
+                <div class="col-md-12 text-center">
+                    {{ page.page(page_data, 'home.index') }}
                 </div>
             </div>
         </div>

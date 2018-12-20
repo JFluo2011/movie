@@ -1,5 +1,7 @@
 {% extends 'home/base.html' %}
 
+{% import 'ui/page.html' as page %}
+
 {% block css %}
 
     .col-lg-1, .col-lg-10, .col-lg-11, .col-lg-12, .col-lg-2, .col-lg-3, .col-lg-4, .col-lg-5, .col-lg-6, .col-lg-7,
@@ -26,46 +28,26 @@
                         <td style="width:30%">登录IP</td>
                         <td style="width:30%">登录地址</td>
                     </tr>
-                    <tr>
-                        <td>1</td>
-                        <td>2017-01-01 12:00:00</td>
-                        <td>192.168.4.1</td>
-                        <td>云南昆明</td>
-                    </tr>
-                    <tr>
-                        <td>1</td>
-                        <td>2017-01-01 12:00:00</td>
-                        <td>192.168.4.1</td>
-                        <td>云南昆明</td>
-                    </tr>
-                    <tr>
-                        <td>1</td>
-                        <td>2017-01-01 12:00:00</td>
-                        <td>192.168.4.1</td>
-                        <td>云南昆明</td>
-                    </tr>
-                    <tr>
-                        <td>1</td>
-                        <td>2017-01-01 12:00:00</td>
-                        <td>192.168.4.1</td>
-                        <td>云南昆明</td>
-                    </tr>
-                    <tr>
-                        <td>1</td>
-                        <td>2017-01-01 12:00:00</td>
-                        <td>192.168.4.1</td>
-                        <td>云南昆明</td>
-                    </tr>
-
+                    {% for log in page_data.items %}
+                        <tr>
+                            <td>{{ log.id }}</td>
+                            <td>{{ log.create_time }}</td>
+                            <td>{{ log.ip }}</td>
+                            <td>云南昆明</td>
+                        </tr>
+                    {% endfor %}
                 </table>
+            </div>
+            <div class="box-footer clearfix">
+                {{ page.page(page_data, 'home.login_log') }}
             </div>
         </div>
     </div>
 {% endblock %}
 {% block js %}
     <script>
-    $(document).ready(function(){
-        $("#m-4").addClass("active");
-    });
+        $(document).ready(function () {
+            $("#m-4").addClass("active");
+        });
     </script>
 {% endblock %}

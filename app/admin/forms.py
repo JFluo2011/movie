@@ -1,13 +1,8 @@
-import os
-
-from flask import current_app
 from flask_wtf import FlaskForm
-from werkzeug.utils import secure_filename
-from wtforms import StringField, PasswordField, SubmitField, TextAreaField, FileField, SelectField
+from wtforms import StringField, PasswordField, SubmitField, TextAreaField, FileField, SelectField, SelectMultipleField
 from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationError
 
-from app.libs.utils import make_dirs, gen_filename
-from ..models import Admin, Tag, Movie
+from ..models import Admin, Tag, Role, Permission
 
 
 class EmailForm(FlaskForm):
@@ -138,7 +133,7 @@ class TagForm(FlaskForm):
         }
     )
     submit = SubmitField(
-        label='添加',
+        label='编辑',
         render_kw={
             'class': 'btn btn-primary',
         }
@@ -248,15 +243,191 @@ class MovieForm(FlaskForm):
         }
     )
 
-    def __init__(self, movie=None):
+    def __init__(self):
         super().__init__()
         self.tag_id.choices = [(int(tag.id), tag.name) for tag in Tag.query.all()]
-        if movie is not None:
-            self.intro.data = movie.intro
-            self.star.data = int(movie.star)
-            self.tag_id.data = movie.tag_id
-            pass
 
-    def validate_name(self, field):
-        if Movie.query.filter_by(name=field.data).first():
-            raise ValidationError('昵称被占用')
+
+class PreviewForm(FlaskForm):
+    title = StringField(
+        label='预告标题',
+        validators=[
+            DataRequired(message='请输入预告标题！'),
+        ],
+        description='预告标题',
+        render_kw={
+            'class': 'form-control',
+            'placeholder': '请输入预告标题！',
+            'required': 'required',
+        }
+    )
+    logo = FileField(
+        label='封面',
+        validators=[
+            DataRequired(message='请上传封面！'),
+        ],
+        description='封面',
+    )
+    submit = SubmitField(
+        label='编辑',
+        render_kw={
+            'class': 'btn btn-primary',
+        }
+    )
+
+
+class ChangePasswordForm(FlaskForm):
+    old_password = PasswordField(
+        label='旧密码',
+        validators=[
+            DataRequired(message='请输入旧密码！'),
+        ],
+        description='旧密码',
+        render_kw={
+            'class': 'form-control input-lg',
+            'placeholder': '请输入旧密码！',
+        }
+    )
+    new_password = PasswordField(
+        label='新密码',
+        validators=[
+            DataRequired(message='请输入新密码！'),
+            Length(min=6, max=32, message='密码长度为:6-32位字符'),
+        ],
+        description='新密码',
+        render_kw={
+            'class': 'form-control input-lg',
+            'placeholder': '请输入新密码！',
+        }
+    )
+    submit = SubmitField(
+        label='编辑',
+        render_kw={
+            'class': 'btn btn-primary',
+        }
+    )
+
+
+class PermissionForm(FlaskForm):
+    name = StringField(
+        label='权限名称',
+        validators=[
+            DataRequired(message='请输入权限名称！'),
+        ],
+        description='权限名称',
+        render_kw={
+            'class': 'form-control',
+            'placeholder': '请输入权限名称！',
+        }
+    )
+    url = StringField(
+        label='权限地址',
+        validators=[
+            DataRequired(message='请输入权限地址！'),
+        ],
+        description='权限地址',
+        render_kw={
+            'class': 'form-control',
+            'placeholder': '请输入权限地址！',
+        }
+    )
+    submit = SubmitField(
+        label='编辑',
+        render_kw={
+            'class': 'btn btn-primary',
+        }
+    )
+
+
+class RoleForm(FlaskForm):
+    name = StringField(
+        label='角色名称',
+        validators=[
+            DataRequired(message='请输入角色名称！'),
+        ],
+        description='角色名称',
+        render_kw={
+            'class': 'form-control',
+            'placeholder': '请输入角色名称！',
+        }
+    )
+    permissions = SelectMultipleField(
+        label='权限列表',
+        validators=[
+            DataRequired(message='请选择权限列表！'),
+        ],
+        coerce=int,
+        choices=[],
+        description='权限列表',
+        render_kw={
+            'class': 'form-control',
+        }
+    )
+    submit = SubmitField(
+        label='编辑',
+        render_kw={
+            'class': 'btn btn-primary',
+        }
+    )
+
+    def __init__(self):
+        super().__init__()
+        self.permissions.choices = [(int(permission.id), permission.name) for permission in Permission.query.all()]
+
+
+class AdminForm(EmailForm):
+    name = StringField(
+        label='管理员名称',
+        validators=[
+            DataRequired(message='请输入管理员名称！'),
+        ],
+        description='管理员名称',
+        render_kw={
+            'class': 'form-control',
+            'placeholder': '请输入管理员名称！',
+        }
+    )
+    password = PasswordField(
+        label='管理员密码',
+        validators=[
+            DataRequired(message='请输入管理员密码！'),
+            Length(min=6, max=32, message='密码长度为:6-32位字符'),
+            EqualTo('repassword', message='两次输入的密码不匹配')
+        ],
+        description='管理员密码',
+        render_kw={
+            'class': 'form-control',
+            'placeholder': '请输入管理员密码！',
+        }
+    )
+    repassword = PasswordField(
+        label='管理员重复密码',
+        validators=[
+            DataRequired(message='请输入管理员重复密码！'),
+            Length(min=6, max=32, message='密码长度为:6-32位字符'),
+        ],
+        description='管理员重复密码',
+        render_kw={
+            'class': 'form-control',
+            'placeholder': '请输入管理员重复密码！',
+        }
+    )
+    role_id = SelectField(
+        label='所属角色',
+        coerce=int,
+        choices=[],
+        description='所属角色',
+        render_kw={
+            'class': 'form-control',
+        }
+    )
+    submit = SubmitField(
+        label='添加',
+        render_kw={
+            'class': 'btn btn-primary',
+        }
+    )
+
+    def __init__(self):
+        super().__init__()
+        self.role_id.choices = [(int(role.id), role.name) for role in Role.query.all()]

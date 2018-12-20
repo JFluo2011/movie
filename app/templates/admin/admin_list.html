@@ -1,5 +1,7 @@
 {% extends 'admin/base.html' %}
 
+{% import 'ui/page.html' as page %}
+
 {% block content %}
     <section class="content-header">
         <h1>微电影管理系统</h1>
@@ -36,33 +38,21 @@
                                 <th>管理员角色</th>
                                 <th>添加时间</th>
                             </tr>
-                            <tr>
-                                <td>1</td>
-                                <td>jinlong</td>
-                                <td>普通管理员</td>
-                                <td>系统管理员</td>
-                                <td>2017-06-01</td>
+                            {% for admin in page_data.items %}
+                                <tr>
+                                <td>{{ admin.id }}</td>
+                                <td>{{ admin.name }}</td>
+                                <td>{{ admin.name }}</td>
+                                <td>{{ admin.role.name }}</td>
+                                <td>{{ admin.create_time }}</td>
                             </tr>
-                            <tr>
-                                <td>2</td>
-                                <td>jianbo</td>
-                                <td>超级管理员</td>
-                                <td>系统管理员</td>
-                                <td>2017-06-01</td>
-                            </tr>
+                            {% endfor %}
+
                             </tbody>
                         </table>
                     </div>
                     <div class="box-footer clearfix">
-                        <ul class="pagination pagination-sm no-margin pull-right">
-                            <li><a href="#">首页</a></li>
-                            <li><a href="#">上一页</a></li>
-                            <li><a href="#">1</a></li>
-                            <li><a href="#">2</a></li>
-                            <li><a href="#">3</a></li>
-                            <li><a href="#">下一页</a></li>
-                            <li><a href="#">尾页</a></li>
-                        </ul>
+                        {{ page.page(page_data, 'admin.admin_list') }}
                     </div>
                 </div>
             </div>

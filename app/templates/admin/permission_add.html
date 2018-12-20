@@ -15,19 +15,20 @@
                     <div class="box-header with-border">
                         <h3 class="box-title">添加权限</h3>
                     </div>
-                    <form role="form">
+                    <form role="form" method="POST">
                         <div class="box-body">
                             <div class="form-group">
-                                <label for="input_name">权限名称</label>
-                                <input type="text" class="form-control" id="input_name" placeholder="请输入权限名称！">
+                                <label for="input_name">{{ form.name.label }}</label>
+                                {{ form.name }}
                             </div>
                             <div class="form-group">
-                                <label for="input_url">权限地址</label>
-                                <input type="text" class="form-control" id="input_url" placeholder="请输入权限地址！">
+                                <label for="input_url">{{ form.url.label }}</label>
+                                {{ form.url }}
                             </div>
                         </div>
                         <div class="box-footer">
-                            <button type="submit" class="btn btn-primary">添加</button>
+                            {{ form.submit }}
+                            {{ form.csrf_token }}
                         </div>
                     </form>
                 </div>

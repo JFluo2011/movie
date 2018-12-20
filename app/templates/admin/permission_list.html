@@ -1,5 +1,7 @@
 {% extends 'admin/base.html' %}
 
+{% import 'ui/page.html' as page %}
+
 {% block content %}
     <section class="content-header">
         <h1>微电影管理系统</h1>
@@ -36,30 +38,24 @@
                                 <th>添加时间</th>
                                 <th>操作事项</th>
                             </tr>
-                            <tr>
-                                <td>1</td>
-                                <td>添加标签</td>
-                                <td>/tag/add/</td>
-                                <td>2017-06-01</td>
-                                <td>
-                                    <a class="label label-success">编辑</a>
-                                    &nbsp;
-                                    <a class="label label-danger">删除</a>
-                                </td>
-                            </tr>
+                            {% for permission in page_data.items %}
+                                <tr>
+                                    <td>{{ permission.id }}</td>
+                                    <td>{{ permission.name }}</td>
+                                    <td>{{ permission.url }}</td>
+                                    <td>{{ permission.create_time }}</td>
+                                    <td>
+                                        <a href="{{ url_for('admin.permission_edit', permission_id=permission.id) }}" class="label label-success">编辑</a>
+                                        &nbsp;
+                                        <a href="{{ url_for('admin.permission_del', permission_id=permission.id) }}" class="label label-danger">删除</a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
                             </tbody>
                         </table>
                     </div>
                     <div class="box-footer clearfix">
-                        <ul class="pagination pagination-sm no-margin pull-right">
-                            <li><a href="#">首页</a></li>
-                            <li><a href="#">上一页</a></li>
-                            <li><a href="#">1</a></li>
-                            <li><a href="#">2</a></li>
-                            <li><a href="#">3</a></li>
-                            <li><a href="#">下一页</a></li>
-                            <li><a href="#">尾页</a></li>
-                        </ul>
+                        {{ page.page(page_data, 'admin.permission_list') }}
                     </div>
                 </div>
             </div>
@@ -68,9 +64,9 @@
 {% endblock %}
 {% block js %}
     <script>
-    $(document).ready(function(){
-        $("#g-9").addClass("active");
-        $("#g-9-2").addClass("active");
-    });
+        $(document).ready(function () {
+            $("#g-9").addClass("active");
+            $("#g-9-2").addClass("active");
+        });
     </script>
 {% endblock %}
