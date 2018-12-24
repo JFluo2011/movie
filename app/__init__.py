@@ -1,6 +1,8 @@
 from flask import Flask, render_template
 from flask_migrate import Migrate
+from flask_login import current_user
 
+from app.libs.enums import RoleEnum
 from app.models import db, login_manager
 
 
@@ -8,7 +10,15 @@ migrate = Migrate()
 
 
 def page_not_found(error):
-    return render_template('404.html'), 404
+    if current_user.is_authenticated and (current_user.role.is_admin()):
+        return render_template('errors/admin_404.html'), 404
+    return render_template('errors/404.html'), 404
+
+
+def page_not_forbidden(error):
+    if current_user.is_authenticated and (current_user.role.is_admin()):
+        return render_template('errors/admin_403.html'), 403
+    return render_template('errors/403.html'), 403
 
 
 def create_app():
@@ -28,6 +38,7 @@ def create_app():
         db.create_all(app=app)
 
     app.errorhandler(404)(page_not_found)
+    app.errorhandler(403)(page_not_forbidden)
 
     return app
 

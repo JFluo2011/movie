@@ -126,7 +126,8 @@
 
 from functools import wraps
 
-from flask import current_app, abort
+from flask import abort
+from flask_login import current_user
 
 from .enums import RoleEnum
 
@@ -134,8 +135,8 @@ from .enums import RoleEnum
 def admin_required(f):
     @wraps(f)
     def decorator(*args, **kwargs):
-        if current_app.role not in [RoleEnum.User]:
-            return f(args, kwargs)
+        if current_user.role not in [RoleEnum.User]:
+            return f(*args, **kwargs)
         raise abort(403)
 
     return decorator
@@ -144,8 +145,8 @@ def admin_required(f):
 def tag_admin_required(f):
     @wraps(f)
     def decorator(*args, **kwargs):
-        if current_app.role in [RoleEnum.TagAdmin, RoleEnum.SuperAdmin]:
-            return f(args, kwargs)
+        if current_user.role in [RoleEnum.TagAdmin, RoleEnum.SuperAdmin]:
+            return f(*args, **kwargs)
         raise abort(403)
 
     return decorator
@@ -154,8 +155,8 @@ def tag_admin_required(f):
 def movie_admin_required(f):
     @wraps(f)
     def decorator(*args, **kwargs):
-        if current_app.role in [RoleEnum.MovieAdmin, RoleEnum.SuperAdmin]:
-            return f(args, kwargs)
+        if current_user.role in [RoleEnum.MovieAdmin, RoleEnum.SuperAdmin]:
+            return f(*args, **kwargs)
         raise abort(403)
 
     return decorator
@@ -164,8 +165,8 @@ def movie_admin_required(f):
 def preview_admin_required(f):
     @wraps(f)
     def decorator(*args, **kwargs):
-        if current_app.role in [RoleEnum.PreviewAdmin, RoleEnum.SuperAdmin]:
-            return f(args, kwargs)
+        if current_user.role in [RoleEnum.PreviewAdmin, RoleEnum.SuperAdmin]:
+            return f(*args, **kwargs)
         raise abort(403)
 
     return decorator
@@ -174,8 +175,8 @@ def preview_admin_required(f):
 def log_admin_required(f):
     @wraps(f)
     def decorator(*args, **kwargs):
-        if current_app.role in [RoleEnum.LogAdmin, RoleEnum.SuperAdmin]:
-            return f(args, kwargs)
+        if current_user.role in [RoleEnum.LogAdmin, RoleEnum.SuperAdmin]:
+            return f(*args, **kwargs)
         raise abort(403)
 
     return decorator
@@ -184,8 +185,8 @@ def log_admin_required(f):
 def user_admin_required(f):
     @wraps(f)
     def decorator(*args, **kwargs):
-        if current_app.role in [RoleEnum.UserAdmin, RoleEnum.SuperAdmin]:
-            return f(args, kwargs)
+        if current_user.role in [RoleEnum.UserAdmin, RoleEnum.SuperAdmin]:
+            return f(*args, **kwargs)
         raise abort(403)
 
     return decorator
@@ -194,8 +195,8 @@ def user_admin_required(f):
 def super_admin_required(f):
     @wraps(f)
     def decorator(*args, **kwargs):
-        if current_app.role in [RoleEnum.SuperAdmin]:
-            return f(args, kwargs)
+        if current_user.role in [RoleEnum.SuperAdmin]:
+            return f(*args, **kwargs)
         raise abort(403)
 
     return decorator

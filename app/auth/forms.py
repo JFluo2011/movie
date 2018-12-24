@@ -189,10 +189,10 @@ class AdminForm(EmailForm):
             'placeholder': '请输入管理员重复密码！',
         }
     )
-    role_id = SelectField(
+    role = SelectField(
         label='所属角色',
-        coerce=int,
-        choices=[RoleEnum.role_str(role) for role in RoleEnum if role not in [RoleEnum.User, RoleEnum.SuperAdmin]],
+        coerce=RoleEnum.coerce,
+        choices=RoleEnum.choices(),
         description='所属角色',
         render_kw={
             'class': 'form-control',

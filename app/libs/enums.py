@@ -38,14 +38,29 @@ class RoleEnum(Enum):
             cls.SuperAdmin: '超级管理员',
         }[key]
 
+    def is_admin(self):
+        return self.value > 0
+
     def __iter__(self):
         for attr in dir(self.__class__):
             if not callable(getattr(self.__class__, attr)) and not attr.startswith("__"):
                 yield attr
 
+    @classmethod
+    def choices(cls):
+        return [(choice, cls.role_str(choice)) for choice in cls if choice.name not in ['User', 'SuperAdmin']]
+
+    @classmethod
+    def coerce(cls, item):
+        return cls(int(item)) if not isinstance(item, cls) else item
+
+    def __str__(self):
+        return str(self.value)
+
 
 def main():
-    pass
+    for _ in RoleEnum:
+        print(_)
 
 
 if __name__ == '__main__':

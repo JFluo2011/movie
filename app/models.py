@@ -44,7 +44,7 @@ class Base(db.Model):
         if ignore_fields is None:
             ignore_fields = ['id']
         else:
-            ignore_fields.append('id')
+            ignore_fields.extend(['id'])
 
         for key, value in form.data.items():
             if hasattr(self, key) and (key not in ignore_fields):
@@ -83,9 +83,8 @@ class User(UserMixin, Base):
     confirm = Column(Boolean, default=False)
     intro = Column(Text)
     avatar = Column(String(255))
-    auth = Column('auth', Enum(AuthEnum), default=AuthEnum.User)
-    role = Column('role', Enum(RoleEnum), default=AuthEnum.User)
-    # role_id = Column(Integer, ForeignKey('roles.id'))
+    auth = Column('auth', Enum(AuthEnum), server_default='User')
+    role = Column('role', Enum(RoleEnum), server_default='User')
     comment = relationship('Comment', backref='user')
     movie_col = relationship('MovieCol', backref='user')
     admin_log = relationship('AdminLog', backref='user')
@@ -113,6 +112,18 @@ class User(UserMixin, Base):
             db.session.add(self)
         return '添加用户成功', 'message'
 
+    def add_admin(self, form):
+        if self.__class__.query.filter_by(email=form.email.data).first():
+            return '用户名已被占用', 'error'
+        self.set_attrs(form)
+        self.auth = AuthEnum.Admin
+        self.confirm = 1
+        self.role = form.role.data
+        self.intro = RoleEnum.role_str(form.role.data)
+        with db.auto_commit():
+            db.session.add(self)
+        return '添加用户成功', 'message'
+
     def change_password(self, form):
         if not self.check_password(form.old_password.data):
             return '旧密码错误', 'error'
@@ -125,7 +136,10 @@ class User(UserMixin, Base):
         return '密码修改成功', 'message'
 
     def set_attrs(self, form, ignore_fields=None):
-        ignore_fields = ['avatar']
+        if ignore_fields is None:
+            ignore_fields = ['avatar', 'auth', 'role']
+        else:
+            ignore_fields.extend(['avatar', 'auth', 'role'])
         super().set_attrs(form, ignore_fields)
 
     def _handle_media_field(self, form, add=True):
@@ -240,7 +254,10 @@ class Movie(Base):
         return f'{self.__class__} {self.title!r}'
 
     def set_attrs(self, form, ignore_fields=None):
-        ignore_fields = ['url', 'logo']
+        if ignore_fields is None:
+            ignore_fields = ['url', 'logo']
+        else:
+            ignore_fields.extend(['url', 'logo'])
         super().set_attrs(form, ignore_fields)
 
     def _handle_media_field(self, form, add=True):
@@ -287,7 +304,10 @@ class Preview(Base):
         return f'{self.__class__} {self.title!r}'
 
     def set_attrs(self, form, ignore_fields=None):
-        ignore_fields = ['logo']
+        if ignore_fields is None:
+            ignore_fields = ['logo']
+        else:
+            ignore_fields.extend(['logo'])
         super().set_attrs(form, ignore_fields)
 
     def _handle_media_field(self, form, add=True):

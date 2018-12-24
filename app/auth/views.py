@@ -4,7 +4,7 @@ from flask_login import current_user, logout_user, login_user, login_required
 from . import auth
 from .forms import LoginForm, RegisterForm, ChangePasswordForm, AdminForm
 from app.models import AdminLog, User, UserLog
-from ..libs.enums import AuthEnum
+from ..libs.enums import AuthEnum, RoleEnum
 from ..libs.permissions import admin_required, user_admin_required, super_admin_required
 
 
@@ -83,7 +83,7 @@ def change_password():
 def user_list(page=None):
     if page is None:
         page = 1
-    page_data = User.query.order_by(
+    page_data = User.query.filter_by(auth=AuthEnum.User).order_by(
         User.create_time.desc()
     ).paginate(page=page, per_page=current_app.config['PER_PAGE'])
     return render_template('admin/user_list.html', page_data=page_data)
@@ -114,11 +114,10 @@ def user_del(uid=None):
 def admin_add():
     form = AdminForm()
     if form.validate_on_submit():
-        admin_user = User()
-        admin_user.is_super = 0
-        msg, type_ = admin_user.add(form)
+        user = User()
+        msg, type_ = user.add_admin(form)
         flash(msg, type_)
-        return redirect(url_for('admin.admin_add'))
+        return redirect(url_for('auth.admin_add'))
 
     return render_template('admin/admin_add.html', form=form)
 
@@ -129,7 +128,7 @@ def admin_add():
 def admin_list(page=None):
     if page is None:
         page = 1
-    page_data = User.query.order_by(
+    page_data = User.query.filter_by(auth=AuthEnum.Admin).order_by(
         User.create_time.desc()
     ).paginate(page=page, per_page=current_app.config['PER_PAGE'])
     return render_template('admin/admin_list.html', page_data=page_data)
