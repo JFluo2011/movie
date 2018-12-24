@@ -4,13 +4,15 @@ from contextlib import contextmanager
 
 from flask import current_app, request
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import Table, Column, ForeignKey
-from sqlalchemy import Integer, DateTime, SmallInteger, String, Boolean, Text, Date, BigInteger
-from sqlalchemy.orm import backref, relationship
+from sqlalchemy import Column, ForeignKey
+from sqlalchemy import Integer, DateTime, SmallInteger, String, Boolean, Text, Date, BigInteger, Enum
+from sqlalchemy.ext.declarative import declared_attr
+from sqlalchemy.orm import relationship
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import LoginManager, UserMixin, current_user
 
-from app.libs.utils import gen_filename, make_dirs
+from app.libs.utils import gen_filename
+from .libs.enums import AuthEnum, RoleEnum
 
 login_manager = LoginManager()
 
@@ -73,14 +75,22 @@ class Base(db.Model):
     #         return datetime.fromtimestamp(self.create_time)
 
 
-class UserBase(UserMixin, Base):
-    __abstract__ = True
+class User(UserMixin, Base):
+    __tablename__ = 'users'
     name = Column(String(20), unique=True, nullable=False)
     email = Column(String(50), unique=True, nullable=False)
     phone = Column(String(20), unique=True)
     confirm = Column(Boolean, default=False)
     intro = Column(Text)
     avatar = Column(String(255))
+    auth = Column('auth', Enum(AuthEnum), default=AuthEnum.User)
+    role = Column('role', Enum(RoleEnum), default=AuthEnum.User)
+    # role_id = Column(Integer, ForeignKey('roles.id'))
+    comment = relationship('Comment', backref='user')
+    movie_col = relationship('MovieCol', backref='user')
+    admin_log = relationship('AdminLog', backref='user')
+    user_log = relationship('UserLog', backref='user')
+    op_log = relationship('OpLog', backref='user')
     _password = Column('password', String(128), nullable=False)
 
     @property
@@ -114,12 +124,6 @@ class UserBase(UserMixin, Base):
             self.password = form.new_password.data
         return '密码修改成功', 'message'
 
-
-class User(UserBase):
-    __tablename__ = 'users'
-    comment = relationship('Comment', backref='user')
-    movie_col = relationship('MovieCol', backref='user')
-
     def set_attrs(self, form, ignore_fields=None):
         ignore_fields = ['avatar']
         super().set_attrs(form, ignore_fields)
@@ -137,58 +141,41 @@ class User(UserBase):
         return '更新成功', 'message'
 
 
-class Admin(UserBase):
-    __tablename__ = 'admins'
-    is_super = Column(Boolean, default=1)
-    role_id = Column(Integer, ForeignKey('roles.id'))
-
-
-class UserLog(Base):
-    __tablename__ = 'user_logs'
-    user_id = Column(Integer, ForeignKey('users.id'))
-    user = relationship('User', backref='user_log')
+class BaseLog(Base):
+    __abstract__ = True
     ip = Column(String(20))
 
-    def add(self):
-        with db.auto_commit():
-            self.user_id = current_user.id
-            self.ip = request.remote_addr
-            db.session.add(self)
-
-    def __repr__(self):
-        return f'{self.__class__} {self.id!r}'
-
-
-class AdminLog(Base):
-    __tablename__ = 'admin_logs'
-    admin_id = Column(Integer, ForeignKey('admins.id'))
-    admin = relationship('Admin', backref='admin_log')
-    ip = Column(String(20))
-
-    def add(self):
-        with db.auto_commit():
-            self.admin_id = current_user.id
-            self.ip = request.remote_addr
-            db.session.add(self)
-
-    def __repr__(self):
-        return f'{self.__class__} {self.id!r}'
-
-
-class OpLog(Base):
-    __tablename__ = 'oplogs'
-    admin_id = Column(Integer, ForeignKey('admins.id'))
-    admin = relationship('Admin', backref='operator_log')
-    reason = Column(String(512))
-    ip = Column(String(20))
-
-    def __init__(self, reason):
-        self.admin_id = current_user.id
-        self.reason = reason
+    def __init__(self, *args, **kwargs):
+        self.user_id = current_user.id
         self.ip = request.remote_addr
 
+    @declared_attr
+    def user_id(cls):
+        return Column(Integer, ForeignKey('users.id'))
+
+    def add(self):
+        with db.auto_commit():
+            db.session.add(self)
+
     def __repr__(self):
         return f'{self.__class__} {self.id!r}'
+
+
+class UserLog(BaseLog):
+    __tablename__ = 'user_logs'
+
+
+class AdminLog(BaseLog):
+    __tablename__ = 'admin_logs'
+
+
+class OpLog(BaseLog):
+    __tablename__ = 'op_logs'
+    reason = Column(String(512))
+
+    def __init__(self, reason, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.reason = reason
 
 
 # movie_tags = db.Table(
@@ -209,25 +196,26 @@ class Tag(Base):
         if Tag.query.filter_by(name=form.name.data).first():
             return '修改标签失败', 'error'
         with db.auto_commit():
-            oplog = OpLog(f'修改标签{self.name}-->{form.name.data}')
-            db.session.add(oplog)
+            op_log = OpLog(f'修改标签{self.name}-->{form.name.data}')
+            db.session.add(op_log)
             self.name = form.name.data
         return '修改标签成功', 'message'
 
     def add(self, form):
         if Tag.query.filter_by(name=form.name.data).first():
             return '标签已存在', 'error'
-        self.set_attrs(form.data)
+
+        self.set_attrs(form)
         with db.auto_commit():
             op_log = OpLog(f'添加标签{self.name}')
             db.session.add(op_log)
             db.session.add(self)
-        return '标签添加成功', 'message'
+        return '添加标签成功', 'message'
 
     def delete(self):
         with db.auto_commit():
-            oplog = OpLog(f'删除标签{self.name}')
-            db.session.add(oplog)
+            op_log = OpLog(f'删除标签{self.name}')
+            db.session.add(op_log)
             db.session.delete(self)
         return '删除标签成功', 'message'
 
@@ -267,8 +255,10 @@ class Movie(Base):
         self._handle_media_field(form)
         self.set_attrs(form)
         with db.auto_commit():
+            op_log = OpLog(f'添加影片{self.title}')
+            db.session.add(op_log)
             db.session.add(self)
-        return '电影添加成功', 'message'
+        return '添加影片成功', 'message'
 
     def update(self, form):
         if (self.title != form.title.data) and Movie.query.filter_by(title=form.title.data).first():
@@ -276,8 +266,16 @@ class Movie(Base):
         with db.auto_commit():
             self._handle_media_field(form, add=False)
             self.set_attrs(form)
-            # db.session.add(self)
-        return '更新成功', 'message'
+            op_log = OpLog(f'编辑影片信息{self.title}')
+            db.session.add(op_log)
+        return '编辑影片信息成功', 'message'
+
+    def delete(self):
+        with db.auto_commit():
+            op_log = OpLog(f'删除影片{self.title}')
+            db.session.add(op_log)
+            db.session.delete(self)
+        return '删除影片成功', 'message'
 
 
 class Preview(Base):
@@ -302,8 +300,10 @@ class Preview(Base):
         self._handle_media_field(form)
         self.set_attrs(form)
         with db.auto_commit():
+            op_log = OpLog(f'添加预告{self.title}')
+            db.session.add(op_log)
             db.session.add(self)
-        return '预告添加成功', 'message'
+        return '添加预告成功', 'message'
 
     def update(self, form):
         if (self.title != form.title.data) and Preview.query.filter_by(title=form.title.data).first():
@@ -311,7 +311,16 @@ class Preview(Base):
         with db.auto_commit():
             self._handle_media_field(form, add=False)
             self.set_attrs(form)
-        return '更新成功', 'message'
+            op_log = OpLog(f'编辑预告信息{self.title}')
+            db.session.add(op_log)
+        return '编辑预告信息成功', 'message'
+
+    def delete(self):
+        with db.auto_commit():
+            op_log = OpLog(f'删除预告{self.title}')
+            db.session.add(op_log)
+            db.session.delete(self)
+        return '删除预告成功', 'message'
 
 
 class Comment(Base):
@@ -355,64 +364,30 @@ class Permission(Base):
         with db.auto_commit():
             self.set_attrs(form)
             db.session.add(self)
-        return '权限添加成功', 'message'
+            op_log = OpLog(f'添加权限{self.name}')
+            db.session.add(op_log)
+        return '添加权限成功', 'message'
 
     def update(self, form):
         if (self.name != form.name.data) and self.__class__.query.filter_by(name=form.name.data).first():
             return '权限已经存在', 'error'
         with db.auto_commit():
+            op_log = OpLog(f'编辑权限{self.name}')
+            db.session.add(op_log)
             self.set_attrs(form)
-        return '修改权限成功', 'message'
+        return '编辑权限成功', 'message'
 
     def delete(self):
         with db.auto_commit():
-            oplog = OpLog(f'删除权限{self.name}')
-            db.session.add(oplog)
+            op_log = OpLog(f'删除权限{self.name}')
+            db.session.add(op_log)
             db.session.delete(self)
         return '删除权限成功', 'message'
 
     def __repr__(self):
-        return f'User {self.name!r}'
-
-
-class Role(Base):
-    __tablename__ = 'roles'
-    name = Column(String(20), unique=True, nullable=False)
-    permissions = Column(String(512))
-    admin = relationship('Admin', backref='role')
-
-    def set_attrs(self, form, ignore_fields=None):
-        ignore_fields = ['permissions']
-        super().set_attrs(form, ignore_fields)
-
-    def add(self, form):
-        if self.__class__.query.filter_by(name=form.name.data).first():
-            return '角色已存在', 'error'
-        with db.auto_commit():
-            self.permissions = ','.join(str(p) for p in form.permissions.data)
-            self.set_attrs(form)
-            db.session.add(self)
-        return '角色添加成功', 'message'
-
-    def update(self, form):
-        if (self.name != form.name.data) and self.__class__.query.filter_by(name=form.name.data).first():
-            return '角色已经存在', 'error'
-        with db.auto_commit():
-            self.permissions = ','.join(str(p) for p in form.permissions.data)
-            self.set_attrs(form)
-        return '修改角色成功', 'message'
-
-    def delete(self):
-        with db.auto_commit():
-            oplog = OpLog(f'删除角色{self.name}')
-            db.session.add(oplog)
-            db.session.delete(self)
-        return '删除角色成功', 'message'
-
-    def __repr__(self):
-        return f'Role {self.name!r}'
+        return f'{self.__class__} {self.name!r}'
 
 
 @login_manager.user_loader
 def get_user(uid):
-    return Admin.query.get(int(uid))
+    return User.query.get(int(uid))

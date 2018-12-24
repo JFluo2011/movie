@@ -1,6 +1,5 @@
 from flask import Flask, render_template
 from flask_migrate import Migrate
-from flask_login.login_manager import LoginManager
 
 from app.models import db, login_manager
 
@@ -20,7 +19,7 @@ def create_app():
     db.init_app(app)
     migrate.init_app(app=app, db=db)
     login_manager.init_app(app=app)
-    login_manager.login_view = 'admin.login'
+    login_manager.login_view = 'auth.login'
     login_manager.login_message = '请登录或者注册帐号'
 
     register_bp(app=app)
@@ -34,9 +33,11 @@ def create_app():
 
 
 def register_bp(app):
-    from .home import home as home_blueprint
-    from .admin import admin as admin_blueprint
+    from .home import home as home_bp
+    from .admin import admin as admin_bp
+    from .auth import auth as auth_bp
 
-    app.register_blueprint(home_blueprint)
-    app.register_blueprint(admin_blueprint, url_prefix='/admin')
+    app.register_blueprint(home_bp)
+    app.register_blueprint(auth_bp)
+    app.register_blueprint(admin_bp, url_prefix='/admin')
 

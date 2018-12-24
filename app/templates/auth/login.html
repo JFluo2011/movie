@@ -1,0 +1,50 @@
+{% extends 'home/base.html' %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-md-4 col-md-offset-4">
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    <h3 class="panel-title"><span class="glyphicon glyphicon-log-in"></span>&nbsp;会员登录</h3>
+                </div>
+                <div class="panel-body">
+                    <form role="form" method="POST">
+                        <fieldset>
+                            <div class="form-group">
+                                <label for="input_contact"><span
+                                        class="glyphicon glyphicon-user"></span>&nbsp;{{ form.email.label }}</label>
+                                {{ form.email }}
+                            </div>
+                            <div class="col-md-12" id="error_contact"></div>
+                            <div class="form-group">
+                                <label for="input_password"><span
+                                        class="glyphicon glyphicon-lock"></span>&nbsp;{{ form.password.label }}</label>
+                                {{ form.password }}
+<<<<<<< HEAD:app/templates/auth/login.html
+                            </div>
+                            <div class="col-xs-8">
+                                <span class="description-text">没有账号？</span><a
+                                    href="{{ url_for('auth.register') }}">注册</a>
+                            </div>
+                            <div class="col-xs-4">
+                                {{ form.submit }}
+                                {{ form.csrf_token }}
+                            </div>
+{#                            <div class="col-md-12" id="error_password">#}
+{#                                {{ form.submit }}#}
+{#                                {{ form.csrf_token }}#}
+{#                            </div>#}
+=======
+                            </div>
+                            <div class="col-md-12" id="error_password">
+                                {{ form.submit }}
+                                {{ form.csrf_token }}
+                            </div>
+>>>>>>> 8f21fb1c1df2db380cdb4d1bdf36e40b5883886d:app/templates/home/login.html
+                        </fieldset>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
