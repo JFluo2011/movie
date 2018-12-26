@@ -4,7 +4,7 @@ from wtforms import StringField, SubmitField, TextAreaField, FileField, SelectFi
 from wtforms.validators import DataRequired
 
 
-from app.models import Permission, Tag
+from app.models import Tag
 
 
 class TagForm(FlaskForm):
@@ -162,70 +162,3 @@ class PreviewForm(FlaskForm):
             'class': 'btn btn-primary',
         }
     )
-
-
-class PermissionForm(FlaskForm):
-    name = StringField(
-        label='权限名称',
-        validators=[
-            DataRequired(message='请输入权限名称！'),
-        ],
-        description='权限名称',
-        render_kw={
-            'class': 'form-control',
-            'placeholder': '请输入权限名称！',
-        }
-    )
-    url = StringField(
-        label='权限地址',
-        validators=[
-            DataRequired(message='请输入权限地址！'),
-        ],
-        description='权限地址',
-        render_kw={
-            'class': 'form-control',
-            'placeholder': '请输入权限地址！',
-        }
-    )
-    submit = SubmitField(
-        label='编辑',
-        render_kw={
-            'class': 'btn btn-primary',
-        }
-    )
-
-
-class RoleForm(FlaskForm):
-    name = StringField(
-        label='角色名称',
-        validators=[
-            DataRequired(message='请输入角色名称！'),
-        ],
-        description='角色名称',
-        render_kw={
-            'class': 'form-control',
-            'placeholder': '请输入角色名称！',
-        }
-    )
-    permissions = SelectMultipleField(
-        label='权限列表',
-        validators=[
-            DataRequired(message='请选择权限列表！'),
-        ],
-        coerce=int,
-        choices=[],
-        description='权限列表',
-        render_kw={
-            'class': 'form-control',
-        }
-    )
-    submit = SubmitField(
-        label='编辑',
-        render_kw={
-            'class': 'btn btn-primary',
-        }
-    )
-
-    def __init__(self):
-        super().__init__()
-        self.permissions.choices = [(int(permission.id), permission.name) for permission in Permission.query.all()]

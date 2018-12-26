@@ -34,12 +34,10 @@ em{font-style:normal;}
 }
 .btn_next{right:20px;}
 .banner_btn span{width:50px; height:100px; display:block; position:absolute;
-		left:110px; top:70px; opacity:0; transition:0.5s;
-		background:url(../images/bannerBtn.png) no-repeat 0 0;}
+		left:110px; top:70px; opacity:0; transition:0.5s;}
 .btn_next span{background-position:-50px 0;}
 .main_banner_box:hover .banner_btn_arrow{opacity:0.6;}
-.banner_btn span i{width:50px; height:100px; display:block;
-		background:url(../images/bannerBtn.png) no-repeat 0 0;}
+.banner_btn span i{width:50px; height:100px; display:block;}
 .btn_next span i{background-position:-50px 0;}
 .banner_btn:hover i{
 		-webkit-animation:arrow 0.5s infinite alternate ease-in-out;

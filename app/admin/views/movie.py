@@ -15,7 +15,7 @@ def movie_add():
     form = MovieForm()
     if form.validate_on_submit():
         movie = Movie()
-        msg, type_ = movie.add(form)
+        msg, type_ = movie.add(form, record_log=True)
         flash(msg, type_)
         return redirect(url_for('admin.movie_add'))
 
@@ -27,8 +27,8 @@ def movie_add():
 @movie_admin_required
 def movie_del(movie_id):
     movie = Movie.query.get_or_404(movie_id)
-    msg, type_ = movie.delete()
-    flash(msg, type_)
+    movie.delete(record_log=True)
+    flash(movie.message, movie.type_)
     return redirect(url_for('admin.movie_list', page=1))
 
 
@@ -49,8 +49,8 @@ def movie_edit(movie_id):
         form.tag_id.data = movie.tag_id
 
     if form.validate_on_submit():
-        msg, type_ = movie.update(form)
-        flash(msg, type_)
+        movie.update(form, record_log=True)
+        flash(movie.message, movie.type_)
         return redirect(url_for('admin.movie_edit', movie_id=movie.id))
 
     return render_template('admin/movie_edit.html', form=form, movie=movie)

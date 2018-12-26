@@ -14,7 +14,7 @@
                 <div class="media">
                     <div class="media-left">
                         <a href="{{ url_for('home.play', movie_id=movie.id, page=1) }}">
-                            <img class="media-object" style="width: 131px; height: 83px" src="{{ url_for('static', filename='uploads/' + movie.logo) }}" alt="{{ movie.title }}">
+                            <img class="media-object" style="width: 131px; height: 83px" src="{{ url_for('static', filename='uploads/'+ config['MOVIE_DIR'] + '/'  + movie.logo) }}" alt="{{ movie.title }}">
                         </a>
                     </div>
                     <div class="media-body">

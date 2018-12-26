@@ -41,7 +41,7 @@
                             {% for oplog in  page_data.items%}
                                 <tr>
                                 <td>{{ oplog.id }}</td>
-                                <td>{{ oplog.admin.name }}</td>
+                                <td>{{ oplog.user.name }}</td>
                                 <td>{{ oplog.create_time }}</td>
                                 <td>{{ oplog.reason }}</td>
                                 <td>{{ oplog.ip }}</td>

@@ -14,6 +14,7 @@ supervisord.conf.d/
 script.py
 local_security.py
 */static/uploads
+media
 
 # db
 migrations/

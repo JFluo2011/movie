@@ -11,10 +11,10 @@ from ..libs.permissions import admin_required, user_admin_required, super_admin_
 def _login(user):
     login_user(user, remember=True)
     if (user.auth == AuthEnum.Admin) or (user.auth == AuthEnum.SuperAdmin):
-        log = AdminLog()
-    else:
-        log = UserLog()
-    log.add()
+        admin_log = AdminLog()
+        admin_log.add()
+    user_log = UserLog()
+    user_log.add()
     next_ = request.args.get('next')
     # not next_.startswith('/') 防止重定向攻击
     if (next_ is None) or (not next_.startswith('/')):
@@ -50,9 +50,9 @@ def register():
     form = RegisterForm()
     if form.validate_on_submit():
         user = User()
-        msg, type_ = user.add(form)
-        flash(msg, type_)
-        if type_ == 'error':
+        user.add(form)
+        flash(user.message, user.type_)
+        if user.type_ == 'error':
             return redirect(url_for('auth.register'))
         return redirect(url_for('auth.login'))
 
@@ -71,8 +71,8 @@ def logout():
 def change_password():
     form = ChangePasswordForm()
     if form.validate_on_submit():
-        msg, type_ = current_user.change_password(form)
-        flash(msg, type_)
+        current_user.change_password(form, record_log=True)
+        flash(current_user.message, current_user.type_)
         return redirect(url_for('auth.login'))
     return render_template('auth/change_password.html', form=form)
 
@@ -102,8 +102,8 @@ def user_view(uid=None):
 @user_admin_required
 def user_del(uid=None):
     user = User.query.get_or_404(uid)
-    user.delete()
-    flash('删除成功', 'message')
+    user.delete(record_log=True)
+    flash(user.message, user.type_)
 
     return render_template('admin/user_list.html', user=user)
 
@@ -115,8 +115,11 @@ def admin_add():
     form = AdminForm()
     if form.validate_on_submit():
         user = User()
-        msg, type_ = user.add_admin(form)
-        flash(msg, type_)
+        user.auth = AuthEnum.Admin
+        user.confirm = 1
+        user.intro = RoleEnum.role_str(form.role.data)
+        user.add(form, record_log=True)
+        flash(user.message, user.type_)
         return redirect(url_for('auth.admin_add'))
 
     return render_template('admin/admin_add.html', form=form)

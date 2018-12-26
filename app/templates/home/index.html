@@ -88,7 +88,7 @@
                 {% for movie in page_data.items %}
                     <div class="col-md-3">
                         <div class="movielist text-center">
-                            <img src="{{ url_for('static', filename='uploads/' + movie.logo) }}"
+                            <img style="width: 400px; height: 500px" src="{{ url_for('static', filename='uploads/' + config['MOVIE_DIR'] + '/' + movie.logo) }}"
                                  class="img-responsive center-block" alt="">
                             <div class="text-left" style="margin-left:auto;margin-right:auto;width:210px;">
                                 <span style="color:#999;font-style: italic;">{{ movie.title }}</span><br>

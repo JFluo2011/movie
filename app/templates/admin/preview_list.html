@@ -43,7 +43,7 @@
                                     <td>{{ preview.id }}</td>
                                     <td>{{ preview.title }}</td>
                                     <td>
-                                        <img src="{{ url_for('static', filename='uploads/' + preview.logo) }}"
+                                        <img src="{{ url_for('static', filename='uploads/'+ config['PREVIEW_DIR'] + '/'  + preview.logo) }}"
                                              style="width: 140px" class="img-responsive center-block" alt="">
                                     </td>
                                     <td>{{ preview.create_time }}</td>

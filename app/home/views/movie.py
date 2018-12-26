@@ -28,8 +28,8 @@ def movie_col_add():
         movie_col = MovieCol()
         movie_col.user_id = uid
         movie_col.movie_id = mid
-        msg, type_ = movie_col.add()
-        flash(msg, type_)
+        movie_col.add()
+        flash(movie_col.message, movie_col.type_)
         result = {'ok': 1}
 
     return json.dumps(result)
@@ -63,8 +63,8 @@ def play(movie_id=None, page=None):
         comment.user_id = current_user.id
         with db.auto_commit():
             movie.comment_num += 1
-        msg, type_ = comment.add(form)
-        flash(msg, type_)
+        comment.add(form)
+        flash(comment.message, comment.type_)
         return redirect(url_for('home.play', movie_id=movie.id, page=1))
 
     with db.auto_commit():

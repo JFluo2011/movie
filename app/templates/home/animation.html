@@ -27,7 +27,7 @@
                                 <span style="opacity:0.4;"></span>
                             {% endif %}
                         </a>
-                        <img src="{{ url_for('static', filename='uploads/' + v.logo) }}" alt="">
+                        <img src="{{ url_for('static', filename='uploads/' + config['MOVIE_DIR'] + '/'  + v.logo) }}" alt="">
                         {% if loop.index0 == 0 %}
                             <p style="bottom:0">{{ v.title }}</p>
                         {% else %}

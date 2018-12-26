@@ -14,8 +14,8 @@ def tag_add():
     form = TagForm()
     if form.validate_on_submit():
         tag = Tag()
-        msg, type_ = tag.add(form)
-        flash(msg, type_)
+        tag.add(form, record_log=True)
+        flash(tag.message, tag.type_)
         return redirect(url_for('admin.tag_add'))
 
     return render_template('admin/tag_add.html', form=form)
@@ -40,8 +40,8 @@ def tag_edit(tag_id):
     tag = Tag.query.get_or_404(tag_id)
     form = TagForm()
     if form.validate_on_submit():
-        msg, type_ = tag.update(form)
-        flash(msg, type_)
+        tag.update(form, record_log=True)
+        flash(tag.message, tag.type_)
         return redirect(url_for('admin.tag_edit', tag_id=tag.id))
 
     return render_template('admin/tag_edit.html', form=form, tag=tag)
@@ -52,6 +52,6 @@ def tag_edit(tag_id):
 @tag_admin_required
 def tag_del(tag_id):
     tag = Tag.query.get_or_404(tag_id)
-    msg, type_ = tag.delete()
-    flash(msg, type_)
+    tag.delete(record_log=True)
+    flash(tag.message, tag.type_)
     return redirect(url_for('admin.tag_list', page=1))

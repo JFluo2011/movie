@@ -29,7 +29,7 @@
                                 <i class="avatar size-L radius">
                                     {% if comment.user.avatar %}
                                         <img alt="50x50"
-                                             src="{{ url_for('static', filename='uploads/' + comment.user.avatar) }}"
+                                             src="{{ url_for('static', filename='uploads/'+ config['AVATAR_DIR'] + '/'  + comment.user.avatar) }}"
                                              class="img-circle"
                                              style="border:1px solid #abcdef;width: 50px;">
                                     {% else %}

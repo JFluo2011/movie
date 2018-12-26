@@ -40,7 +40,7 @@
                             {% for log in page_data.items %}
                                 <tr>
                                     <td>{{ log.id }}</td>
-                                    <td>{{ log.name }}</td>
+                                    <td>{{ log.user.name }}</td>
                                     <td>{{ log.create_time }}</td>
                                     <td>{{ log.ip }}</td>
                                 </tr>

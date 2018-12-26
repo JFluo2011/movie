@@ -111,36 +111,17 @@
     </li>
     <li class="treeview" id="g-7">
         <a href="#">
-            <i class="fa fa-lock" aria-hidden="true"></i>
-            <span>权限管理</span>
-            <span class="label label-primary pull-right">2</span>
-        </a>
-        <ul class="treeview-menu">
-            <li id="g-7-1">
-                <a href="{{ url_for('admin.permission_add') }}">
-                    <i class="fa fa-circle-o"></i> 添加权限
-                </a>
-            </li>
-            <li id="g-7-2">
-                <a href="{{ url_for('admin.permission_list', page=1) }}">
-                    <i class="fa fa-circle-o"></i> 权限列表
-                </a>
-            </li>
-        </ul>
-    </li>
-    <li class="treeview" id="g-8">
-        <a href="#">
             <i class="fa fa-user-circle" aria-hidden="true"></i>
             <span>管理员管理</span>
             <span class="label label-primary pull-right">2</span>
         </a>
         <ul class="treeview-menu">
-            <li id="g-8-1">
+            <li id="g-7-1">
                 <a href="{{ url_for('auth.admin_add') }}">
                     <i class="fa fa-circle-o"></i> 添加管理员
                 </a>
             </li>
-            <li id="g-8-2">
+            <li id="g-7-2">
                 <a href="{{ url_for('auth.admin_list', page=1) }}">
                     <i class="fa fa-circle-o"></i> 管理员列表
                 </a>

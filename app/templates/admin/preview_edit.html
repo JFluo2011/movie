@@ -24,7 +24,7 @@
                             <div class="form-group">
                                 <label for="input_logo">{{ form.logo.label }}</label>
                                 {{ form.logo }}
-                                <img src="{{ url_for('static', filename='uploads/' + preview.logo) }}"
+                                <img src="{{ url_for('static', filename='uploads/'+ config['PREVIEW_DIR'] + '/'  + preview.logo) }}"
                                      class="img-responsive center-block" alt="">
                             </div>
                         </div>

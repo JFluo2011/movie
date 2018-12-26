@@ -113,7 +113,7 @@
                                 <span aria-hidden="true">×</span>
                                 <span class="sr-only">Close</span>
                             </button>
-                            <strong>请先<a href="{{ url_for('home.login') }}" target="_blank" class="text-info">登录</a>，才可参与评论！</strong>
+                            <strong>请先<a href="{{ url_for('auth.login') }}" target="_blank" class="text-info">登录</a>，才可参与评论！</strong>
                         </div>
                     {% else %}
                         <form role="form" method="POST" style="margin-bottom:6px;">
@@ -146,7 +146,7 @@
                                     <i class="avatar size-L radius">
                                         {% if comment.user.avatar %}
                                             <img alt="50x50"
-                                                 src="{{ url_for('static', filename='uploads/' + comment.user.avatar) }}"
+                                                 src="{{ url_for('static', filename='uploads/'+ config['AVATAR_DIR'] + '/'  + comment.user.avatar) }}"
                                                  class="img-circle"
                                                  style="border:1px solid #abcdef;width: 50px;">
                                         {% else %}
@@ -202,7 +202,7 @@
         jwplayer("moviecontainer").setup({
             flashplayer: "{{ url_for('static', filename='jwplayer/jwplayer.flash.swf') }}",
             playlist: [{
-                file: "{{ url_for('static', filename='uploads/' + movie.url) }}",
+                file: "{{ url_for('static', filename='uploads/' + config['MOVIE_DIR'] + '/'  + movie.url) }}",
                 title: "{{ movie.title }}"
             }],
             modes: [{

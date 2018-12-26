@@ -14,8 +14,8 @@ def preview_add():
     form = PreviewForm()
     if form.validate_on_submit():
         preview = Preview()
-        msg, type_ = preview.add(form)
-        flash(msg, type_)
+        preview.add(form, record_log=True)
+        flash(preview.message, preview.type_)
         return redirect(url_for('admin.preview_add'))
     return render_template('admin/preview_add.html', form=form)
 
@@ -37,8 +37,8 @@ def preview_list(page=None):
 @preview_admin_required
 def preview_del(preview_id):
     preview = Preview.query.get_or_404(preview_id)
-    msg, type_ = preview.delete()
-    flash(msg, type_)
+    preview.delete(record_log=True)
+    flash(preview.message, preview.type_)
     return redirect(url_for('admin.preview_list', page=1))
 
 
@@ -52,8 +52,8 @@ def preview_edit(preview_id):
     form.logo.validators = []
 
     if form.validate_on_submit():
-        msg, type_ = preview.update(form)
-        flash(msg, type_)
+        preview.update(form, record_log=True)
+        flash(preview.message, preview.type_)
         return redirect(url_for('admin.preview_edit', preview_id=preview.id))
 
     return render_template('admin/preview_edit.html', form=form, preview=preview)

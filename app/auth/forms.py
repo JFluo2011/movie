@@ -100,6 +100,10 @@ class RegisterForm(EmailForm):
             'required': 'required',
         }
     )
+    avatar = FileField(
+        label='头像',
+        description='头像',
+    )
     submit = SubmitField(
         label='注册',
         render_kw={
@@ -198,13 +202,16 @@ class AdminForm(EmailForm):
             'class': 'form-control',
         }
     )
+    avatar = FileField(
+        label='头像',
+        description='头像',
+    )
     submit = SubmitField(
         label='添加',
         render_kw={
             'class': 'btn btn-primary',
         }
     )
-
 
 
 class UserInfoForm(EmailForm):
