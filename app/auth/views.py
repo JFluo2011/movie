@@ -50,9 +50,7 @@ def register():
     form = RegisterForm()
     if form.validate_on_submit():
         user = User()
-        user.add(form)
-        flash(user.message, user.type_)
-        if user.type_ == 'error':
+        if not user.add(form, record_log=False):
             return redirect(url_for('auth.register'))
         return redirect(url_for('auth.login'))
 
@@ -71,9 +69,10 @@ def logout():
 def change_password():
     form = ChangePasswordForm()
     if form.validate_on_submit():
-        current_user.change_password(form, record_log=True)
-        flash(current_user.message, current_user.type_)
-        return redirect(url_for('auth.login'))
+        next_ = url_for('auth.login')
+        if not current_user.change_password(form, record_log=False):
+            next_ = url_for('auth.change_password')
+        return redirect(next_)
     return render_template('auth/change_password.html', form=form)
 
 
@@ -103,9 +102,8 @@ def user_view(uid=None):
 def user_del(uid=None):
     user = User.query.get_or_404(uid)
     user.delete(record_log=True)
-    flash(user.message, user.type_)
 
-    return render_template('admin/user_list.html', user=user)
+    return redirect(url_for('auth.user_list', page=1))
 
 
 @auth.route('/admin/add', methods=['GET', 'POST'])
@@ -118,8 +116,7 @@ def admin_add():
         user.auth = AuthEnum.Admin
         user.confirm = 1
         user.intro = RoleEnum.role_str(form.role.data)
-        user.add(form, record_log=True)
-        flash(user.message, user.type_)
+        user.add(form, record_log=False)
         return redirect(url_for('auth.admin_add'))
 
     return render_template('admin/admin_add.html', form=form)

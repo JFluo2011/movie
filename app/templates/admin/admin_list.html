@@ -42,8 +42,8 @@
                                 <tr>
                                 <td>{{ admin.id }}</td>
                                 <td>{{ admin.name }}</td>
-                                <td>{{ admin.name }}</td>
-                                <td>{{ admin.role.name }}</td>
+                                <td>{{ admin.auth.__class__.auth_str(admin.auth) }}</td>
+                                <td>{{ admin.role.__class__.role_str(admin.role) }}</td>
                                 <td>{{ admin.create_time }}</td>
                             </tr>
                             {% endfor %}

@@ -63,7 +63,7 @@
 }
 .skin-green-light .content-wrapper,
 .skin-green-light .main-footer {
-  border-left: 1px solid #d2d6de;
+  border-left: 1px solid red;
 }
 .skin-green-light .user-panel > .info,
 .skin-green-light .user-panel > .info > a {

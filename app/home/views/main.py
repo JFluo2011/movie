@@ -73,7 +73,6 @@ def user_info(uid):
 
     if form.validate_on_submit():
         user.update(form)
-        flash(user.message, user.type_)
         return redirect(url_for('home.user_info', uid=user.id))
 
     return render_template('home/user_info.html', form=form, user=user)

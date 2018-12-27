@@ -15,7 +15,6 @@ def tag_add():
     if form.validate_on_submit():
         tag = Tag()
         tag.add(form, record_log=True)
-        flash(tag.message, tag.type_)
         return redirect(url_for('admin.tag_add'))
 
     return render_template('admin/tag_add.html', form=form)
@@ -27,7 +26,7 @@ def tag_add():
 def tag_list(page=None):
     if page is None:
         page = 1
-    page_data = Tag.query.order_by(
+    page_data = Tag.query.filter_by().order_by(
         Tag.create_time.desc()
     ).paginate(page=page, per_page=current_app.config['PER_PAGE'])
     return render_template('admin/tag_list.html', page_data=page_data)
@@ -41,7 +40,6 @@ def tag_edit(tag_id):
     form = TagForm()
     if form.validate_on_submit():
         tag.update(form, record_log=True)
-        flash(tag.message, tag.type_)
         return redirect(url_for('admin.tag_edit', tag_id=tag.id))
 
     return render_template('admin/tag_edit.html', form=form, tag=tag)
@@ -53,5 +51,4 @@ def tag_edit(tag_id):
 def tag_del(tag_id):
     tag = Tag.query.get_or_404(tag_id)
     tag.delete(record_log=True)
-    flash(tag.message, tag.type_)
     return redirect(url_for('admin.tag_list', page=1))

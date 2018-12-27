@@ -2,6 +2,7 @@ import json
 
 from flask import current_app, render_template, request, flash, redirect, url_for
 from flask_login import current_user
+from sqlalchemy import and_
 
 from app.home import home
 from app.home.forms.main import CommentForm
@@ -29,7 +30,6 @@ def movie_col_add():
         movie_col.user_id = uid
         movie_col.movie_id = mid
         movie_col.add()
-        flash(movie_col.message, movie_col.type_)
         result = {'ok': 1}
 
     return json.dumps(result)
@@ -41,7 +41,7 @@ def search(page=None):
         page = 1
 
     key = request.args.get('key', '')
-    page_data = Movie.query.filter(Movie.title.ilike(f'%{key}%'))
+    page_data = Movie.query.filter(Movie.title.ilike(f'%{key}%', Movie.status == True))
     count = page_data.count()
     page_data = page_data.paginate(
         page=page, per_page=current_app.config['PER_PAGE'])
@@ -64,7 +64,6 @@ def play(movie_id=None, page=None):
         with db.auto_commit():
             movie.comment_num += 1
         comment.add(form)
-        flash(comment.message, comment.type_)
         return redirect(url_for('home.play', movie_id=movie.id, page=1))
 
     with db.auto_commit():

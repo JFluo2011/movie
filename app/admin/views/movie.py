@@ -15,8 +15,7 @@ def movie_add():
     form = MovieForm()
     if form.validate_on_submit():
         movie = Movie()
-        msg, type_ = movie.add(form, record_log=True)
-        flash(msg, type_)
+        movie.add(form, record_log=True)
         return redirect(url_for('admin.movie_add'))
 
     return render_template('admin/movie_add.html', form=form, tags=tags)
@@ -28,7 +27,6 @@ def movie_add():
 def movie_del(movie_id):
     movie = Movie.query.get_or_404(movie_id)
     movie.delete(record_log=True)
-    flash(movie.message, movie.type_)
     return redirect(url_for('admin.movie_list', page=1))
 
 
@@ -50,7 +48,6 @@ def movie_edit(movie_id):
 
     if form.validate_on_submit():
         movie.update(form, record_log=True)
-        flash(movie.message, movie.type_)
         return redirect(url_for('admin.movie_edit', movie_id=movie.id))
 
     return render_template('admin/movie_edit.html', form=form, movie=movie)
@@ -62,7 +59,8 @@ def movie_edit(movie_id):
 def movie_list(page=None):
     if page is None:
         page = 1
-    page_data = Movie.query.order_by(
+    # filter_by()自定义的查询方式
+    page_data = Movie.query.filter_by().order_by(
         Movie.create_time.desc()
     ).paginate(page=page, per_page=current_app.config['PER_PAGE'])
     return render_template('admin/movie_list.html', page_data=page_data)

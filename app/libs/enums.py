@@ -58,6 +58,20 @@ class RoleEnum(Enum):
         return str(self.value)
 
 
+class OperatorEnum(Enum):
+    ADD = 1
+    UPDATE = 2
+    DELETE = 3
+
+    @classmethod
+    def operator_str(cls, key):
+        return {
+            cls.ADD: '添加',
+            cls.UPDATE: '编辑',
+            cls.DELETE: '删除',
+        }[key]
+
+
 def main():
     for _ in RoleEnum:
         print(_)

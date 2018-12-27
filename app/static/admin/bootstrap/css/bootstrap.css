@@ -5083,10 +5083,10 @@ a.thumbnail.active {
 .alert-warning {
   color: #8a6d3b;
   background-color: #fcf8e3;
-  border-color: #faebcc;
+  border-color: red;
 }
 .alert-warning hr {
-  border-top-color: #f7e1b5;
+  border-top-color: red;
 }
 .alert-warning .alert-link {
   color: #66512c;

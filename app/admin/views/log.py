@@ -13,7 +13,7 @@ from ...libs.enums import AuthEnum
 def oplog_list(page=None):
     if page is None:
         page = 1
-    page_data = OpLog.query.order_by(
+    page_data = OpLog.query.filter_by().order_by(
         OpLog.create_time.desc()
     ).paginate(page=page, per_page=current_app.config['PER_PAGE'])
     return render_template('admin/oplog_list.html', page_data=page_data)
@@ -25,7 +25,7 @@ def oplog_list(page=None):
 def admin_login_log_list(page=None):
     if page is None:
         page = 1
-    page_data = AdminLog.query.join(User).filter(User.auth >= AuthEnum.Admin).order_by(
+    page_data = AdminLog.query.join(User).filter(User.auth >= AuthEnum.Admin, User.status==True).order_by(
         AdminLog.create_time.desc()
     ).paginate(page=page, per_page=current_app.config['PER_PAGE'])
     return render_template('admin/admin_login_log_list.html', page_data=page_data)
@@ -37,7 +37,7 @@ def admin_login_log_list(page=None):
 def user_login_log_list(page=None):
     if page is None:
         page = 1
-    page_data = UserLog.query.join(User).filter(User.auth == AuthEnum.User).order_by(
+    page_data = UserLog.query.join(User).filter(User.auth == AuthEnum.User, User.status==True).order_by(
         UserLog.create_time.desc()
     ).paginate(page=page, per_page=current_app.config['PER_PAGE'])
     return render_template('admin/user_login_log_list.html', page_data=page_data)

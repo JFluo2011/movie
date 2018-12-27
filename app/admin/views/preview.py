@@ -15,7 +15,6 @@ def preview_add():
     if form.validate_on_submit():
         preview = Preview()
         preview.add(form, record_log=True)
-        flash(preview.message, preview.type_)
         return redirect(url_for('admin.preview_add'))
     return render_template('admin/preview_add.html', form=form)
 
@@ -26,7 +25,7 @@ def preview_add():
 def preview_list(page=None):
     if page is None:
         page = 1
-    page_data = Preview.query.order_by(
+    page_data = Preview.query.filter_by().order_by(
         Preview.create_time.desc()
     ).paginate(page=page, per_page=current_app.config['PER_PAGE'])
     return render_template('admin/preview_list.html', page_data=page_data)
@@ -38,7 +37,6 @@ def preview_list(page=None):
 def preview_del(preview_id):
     preview = Preview.query.get_or_404(preview_id)
     preview.delete(record_log=True)
-    flash(preview.message, preview.type_)
     return redirect(url_for('admin.preview_list', page=1))
 
 
@@ -53,7 +51,6 @@ def preview_edit(preview_id):
 
     if form.validate_on_submit():
         preview.update(form, record_log=True)
-        flash(preview.message, preview.type_)
         return redirect(url_for('admin.preview_edit', preview_id=preview.id))
 
     return render_template('admin/preview_edit.html', form=form, preview=preview)

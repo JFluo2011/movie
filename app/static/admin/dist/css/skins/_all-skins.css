@@ -205,7 +205,7 @@
 }
 .skin-blue-light .content-wrapper,
 .skin-blue-light .main-footer {
-  border-left: 1px solid #d2d6de;
+  border-left: 1px solid red;
 }
 .skin-blue-light .user-panel > .info,
 .skin-blue-light .user-panel > .info > a {
